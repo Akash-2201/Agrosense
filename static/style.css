@@ -1,0 +1,19 @@
+.price-card {
+  background: #1a2e1a;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #2d4a2d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.price-card .crop-name { font-size: 15px; font-weight: 600; color: #fff; }
+.price-card .crop-price { font-size: 18px; font-weight: 700; color: #4caf50; }
+.price-card .crop-meta { font-size: 11px; color: #81c784; }
+.profit-badge {
+  font-size: 11px; padding: 4px 8px;
+  border-radius: 20px; font-weight: 600;
+}
+.profit-yes { background: #1a4a1a; color: #4caf50; }
+.profit-no  { background: #4a1a00; color: #ff9800; }

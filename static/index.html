@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AgroSense</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f0f7f0;
+      color: #1a3a1a;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #2e7d32, #43a047);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 44px; height: 44px; background: rgba(255,255,255,0.2);
+      border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; font-size: 24px;
+    }
+    .header h1 { font-size: 22px; font-weight: 700; color: #fff; }
+    .header p  { font-size: 12px; color: rgba(255,255,255,0.8); }
+    .status-pill {
+      background: rgba(255,255,255,0.2); border-radius: 20px;
+      padding: 6px 12px; font-size: 12px; color: #fff;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #a5d6a7; animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── Hero banner ── */
+    .hero {
+      background: linear-gradient(135deg, #1b5e20, #2e7d32);
+      padding: 24px 20px;
+      text-align: center;
+      color: #fff;
+    }
+    .hero h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+    .hero p  { font-size: 13px; opacity: 0.85; line-height: 1.5; }
+
+    /* ── Language selector ── */
+    .lang-bar {
+      background: #fff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #e8f5e9;
+      overflow-x: auto;
+    }
+    .lang-bar span { font-size: 12px; color: #666; white-space: nowrap; }
+    .lang-btn {
+      padding: 6px 14px; border-radius: 20px; font-size: 12px;
+      border: 1.5px solid #2e7d32; background: #fff;
+      color: #2e7d32; cursor: pointer; white-space: nowrap;
+      font-weight: 500; transition: all 0.2s;
+    }
+    .lang-btn.active { background: #2e7d32; color: #fff; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; background: #fff;
+      border-bottom: 2px solid #e8f5e9;
+      position: sticky; top: 0; z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .tab {
+      flex: 1; padding: 14px 4px; text-align: center;
+      font-size: 11px; color: #888; cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s; font-weight: 500;
+    }
+    .tab.active { color: #2e7d32; border-bottom-color: #2e7d32; }
+    .tab-icon { font-size: 20px; display: block; margin-bottom: 3px; }
+
+    /* ── Pages ── */
+    .page { display: none; padding: 16px; max-width: 480px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff; border-radius: 16px;
+      padding: 18px; margin-bottom: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      border: 1px solid #e8f5e9;
+    }
+    .card-title {
+      font-size: 13px; font-weight: 600; color: #2e7d32;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 12px; display: flex;
+      align-items: center; gap: 6px;
+    }
+
+    /* ── Camera box ── */
+    .camera-box {
+      background: #f0f7f0; border: 2px dashed #a5d6a7;
+      border-radius: 14px; overflow: hidden; position: relative;
+      width: 100%; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+    }
+    video { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .cam-placeholder { text-align: center; padding: 20px; }
+    .cam-placeholder .icon { font-size: 52px; margin-bottom: 10px; }
+    .cam-placeholder h3 { font-size: 15px; color: #2e7d32; margin-bottom: 6px; }
+    .cam-placeholder p  { font-size: 12px; color: #888; line-height: 1.5; }
+
+    /* ── Buttons ── */
+    .btn {
+      width: 100%; padding: 15px; border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      margin-top: 10px; transition: all 0.2s; letter-spacing: 0.3px;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: #2e7d32; color: #fff; }
+    .btn-primary:hover { background: #1b5e20; }
+    .btn-outline {
+      background: #fff; color: #2e7d32;
+      border: 2px solid #2e7d32;
+    }
+    .btn-outline:hover { background: #f0f7f0; }
+    .btn-voice {
+      background: #e8f5e9; color: #2e7d32;
+      border: none; display: flex;
+      align-items: center; justify-content: center; gap: 8px;
+    }
+
+    /* ── Result section ── */
+    .result-card {
+      background: #fff; border-radius: 16px;
+      padding: 18px; margin-top: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      border: 1px solid #e8f5e9;
+      display: none;
+    }
+    .result-card.show { display: block; }
+    .result-badge {
+      display: inline-block; padding: 4px 12px;
+      border-radius: 20px; font-size: 12px; font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .badge-success { background: #e8f5e9; color: #2e7d32; }
+    .badge-warning { background: #fff3e0; color: #e65100; }
+    .badge-danger  { background: #ffebee; color: #c62828; }
+    .result-main {
+      font-size: 24px; font-weight: 700;
+      color: #1a3a1a; margin-bottom: 4px;
+    }
+    .result-sub { font-size: 13px; color: #666; margin-bottom: 14px; }
+
+    /* ── Moisture bar ── */
+    .moisture-label {
+      display: flex; justify-content: space-between;
+      font-size: 13px; margin-bottom: 6px;
+    }
+    .moisture-label span:last-child { font-weight: 600; color: #2e7d32; }
+    .bar-bg {
+      background: #e8f5e9; border-radius: 8px;
+      height: 10px; overflow: hidden; margin-bottom: 6px;
+    }
+    .bar-fill {
+      height: 100%; border-radius: 8px;
+      background: linear-gradient(90deg, #ef5350, #ffa726, #66bb6a);
+      transition: width 1s ease;
+    }
+    .bar-labels {
+      display: flex; justify-content: space-between;
+      font-size: 10px; color: #aaa; margin-bottom: 14px;
+    }
+
+    /* ── Recommendation box ── */
+    .rec-box {
+      background: #f0f7f0; border-radius: 12px;
+      padding: 14px; border-left: 4px solid #2e7d32;
+    }
+    .rec-box p { font-size: 14px; line-height: 1.6; color: #1a3a1a; }
+
+    /* ── Chips ── */
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .chip {
+      background: #f0f7f0; border-radius: 20px;
+      padding: 5px 10px; font-size: 11px; color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+    .chip.top {
+      background: #2e7d32; color: #fff; border-color: #2e7d32;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #e8f5e9; border-top-color: #2e7d32;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin: 20px auto; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── History ── */
+    .history-item {
+      background: #fff; border-radius: 12px;
+      padding: 14px; margin-bottom: 10px;
+      border: 1px solid #e8f5e9;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .h-icon {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: #e8f5e9; display: flex;
+      align-items: center; justify-content: center; font-size: 20px;
+    }
+    .h-info { flex: 1; }
+    .h-info strong { font-size: 14px; color: #1a3a1a; }
+    .h-info span   { font-size: 11px; color: #888; display: block; }
+    .h-badge {
+      font-size: 11px; padding: 4px 10px;
+      border-radius: 20px; font-weight: 600;
+    }
+    .badge-dry  { background: #fff3e0; color: #e65100; }
+    .badge-ok   { background: #e8f5e9; color: #2e7d32; }
+    .badge-wet  { background: #e3f2fd; color: #1565c0; }
+
+    /* ── Market cards ── */
+    .price-card {
+      background: #fff; border-radius: 14px;
+      padding: 14px; margin-bottom: 10px;
+      border: 1px solid #e8f5e9;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .crop-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: #e8f5e9; display: flex;
+      align-items: center; justify-content: center; font-size: 20px;
+      margin-right: 12px;
+    }
+    .crop-info { flex: 1; }
+    .crop-name  { font-size: 15px; font-weight: 600; color: #1a3a1a; }
+    .crop-meta  { font-size: 11px; color: #888; margin-top: 2px; }
+    .crop-price { font-size: 18px; font-weight: 700; color: #2e7d32; }
+    .profit-badge {
+      font-size: 11px; padding: 3px 8px;
+      border-radius: 20px; font-weight: 600;
+      display: block; margin-top: 4px; text-align: right;
+    }
+    .profit-yes { background: #e8f5e9; color: #2e7d32; }
+    .profit-no  { background: #fff3e0; color: #e65100; }
+
+    /* ── Weather card ── */
+    .weather-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 12px;
+    }
+    .weather-stat {
+      background: #f0f7f0; border-radius: 10px;
+      padding: 12px; text-align: center;
+    }
+    .weather-stat .val {
+      font-size: 20px; font-weight: 700; color: #2e7d32;
+    }
+    .weather-stat .lbl {
+      font-size: 11px; color: #888; margin-top: 2px;
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 12px; font-weight: 700; color: #2e7d32;
+      text-transform: uppercase; letter-spacing: 1px;
+      margin: 16px 0 8px;
+    }
+
+    /* ── Voice panel ── */
+    .voice-panel {
+      background: #f0f7f0; border-radius: 12px;
+      padding: 14px; margin-top: 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .voice-panel select {
+      flex: 1; padding: 8px 12px; border-radius: 8px;
+      border: 1.5px solid #a5d6a7; font-size: 13px;
+      background: #fff; color: #1a3a1a;
+    }
+    .voice-speak-btn {
+      padding: 8px 16px; border-radius: 8px;
+      background: #2e7d32; color: #fff;
+      border: none; font-size: 13px;
+      font-weight: 600; cursor: pointer;
+    }
+
+    #bbox-canvas {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; pointer-events: none;
+    }
+    
+    .product-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #e8f5e9;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .product-img {
+      width: 80px; height: 80px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: #f0f7f0;
+      padding: 4px;
+      float: left;
+      margin-right: 12px;
+      }
+    .product-info { overflow: hidden; }
+    .product-name { font-size: 14px; font-weight: 600; color: #1a3a1a; }
+    .product-brand { font-size: 12px; color: #888; margin-bottom: 4px; }
+    .product-price { font-size: 14px; font-weight: 700; color: #2e7d32; }
+    .product-dosage {
+      font-size: 11px; color: #555;
+      background: #f0f7f0; border-radius: 8px;
+      padding: 6px 8px; margin-top: 8px;
+      clear: both;
+    }
+    .product-warning {
+      font-size: 11px; color: #e65100;
+      background: #fff3e0; border-radius: 8px;
+      padding: 6px 8px; margin-top: 4px;
+     } 
+    .buy-buttons {
+      display: flex; gap: 8px;
+      margin-top: 10px; clear: both;
+    }
+    .buy-btn {
+      flex: 1; padding: 8px;
+      border-radius: 8px; border: none;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; text-align: center;
+      text-decoration: none; display: block;
+    }
+    .buy-amazon { background: #ff9900; color: #fff; }
+    .buy-bighat { background: #2e7d32; color: #fff; }
+
+    #guide-canvas { z-index: 5; }
+
+  
+
+  
+  </style>
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#2e7d32"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="AgroSense"/>
+  <meta name="description" content="AI-powered smart farming assistant with soil analysis, disease detection, and market prices"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json"/>
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/icons/icon-152.png"/>
+  <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png"/>
+  <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png"/>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96.png"/>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">🌱</div>
+    <div>
+      <h1>AgroSense</h1>
+      <p>Smart Farming Assistant</p>
+    </div>
+  </div>
+  <div class="status-pill">
+    <span class="dot"></span> AI Ready
+  </div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <h2>Your Smart Farm Doctor 🌾</h2>
+  <p>Scan soil & leaves for instant AI diagnosis<br/>and market prices in your language</p>
+</div>
+
+<!-- Language Bar -->
+<div class="lang-bar">
+  <span>🗣️ Voice:</span>
+  <button class="lang-btn active" onclick="setLang('en-IN', this)">English</button>
+  <button class="lang-btn" onclick="setLang('hi-IN', this)">हिंदी</button>
+  <button class="lang-btn" onclick="setLang('kn-IN', this)">ಕನ್ನಡ</button>
+  <button class="lang-btn" onclick="setLang('ta-IN', this)">தமிழ்</button>
+  <button class="lang-btn" onclick="setLang('te-IN', this)">తెలుగు</button>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('soil')">
+    <span class="tab-icon">💧</span>Soil
+  </div>
+  <div class="tab" onclick="switchTab('disease')">
+    <span class="tab-icon">🔬</span>Disease
+  </div>
+  <div class="tab" onclick="switchTab('market')">
+    <span class="tab-icon">📈</span>Market
+  </div>
+  <div class="tab" onclick="switchTab('farm')">
+     <span class="tab-icon">🌾</span>Farm
+  </div>
+  <div class="tab" onclick="switchTab('history')">
+    <span class="tab-icon">📋</span>History
+  </div>
+</div>
+
+<!-- SOIL PAGE -->
+<div class="page active" id="page-soil">
+  <div class="card">
+    <div class="card-title">💧 Soil Moisture Scan</div>
+    <div class="camera-box" id="soil-camera-box">
+      <!-- Add this INSIDE soil-camera-box div -->
+      <canvas id="guide-canvas" style="position:absolute;top:0;left:0;
+        width:100%;height:100%;pointer-events:none;"></canvas>
+      <div id="dig-guide" style="display:none;position:absolute;bottom:20px;
+        left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);
+        color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;
+        white-space:nowrap">
+  📐    Align soil cross-section inside Circle
+      </div>
+      <video id="soil-video" autoplay playsinline></video>
+      <canvas id="soil-canvas" style="display:none"></canvas>
+      <div class="cam-placeholder" id="soil-placeholder">
+        <div class="icon">🪱</div>
+        <h3>Point at Soil</h3>
+        <p>Dig a 15cm hole and point<br/>your camera at the cross-section</p>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="soil-cam-btn" onclick="startSoilCamera()">
+      📷 Open Camera
+    </button>
+    <button class="btn btn-primary" id="soil-capture-btn"
+            onclick="captureSoil()" style="display:none">
+      ⚡ Analyze Now
+    </button>
+    <button class="btn btn-outline"
+            onclick="document.getElementById('soil-file').click()">
+      📁 Upload Photo
+    </button>
+    <input type="file" id="soil-file" accept="image/*"
+           style="display:none" onchange="uploadSoil(this)"/>
+  </div>
+
+  <div class="spinner" id="soil-spinner"></div>
+
+  <div class="result-card" id="soil-result">
+    <div class="card-title">📊 Analysis Result</div>
+    <span class="result-badge badge-success" id="soil-badge">Adequate</span>
+    <div class="result-main" id="soil-type-text">--</div>
+    <div class="result-sub"  id="soil-confidence-text">--</div>
+    <div class="moisture-label">
+      <span>Moisture Level</span>
+      <span id="soil-moisture-pct">--%</span>
+    </div>
+    <div class="bar-bg">
+      <div class="bar-fill" id="soil-moisture-bar" style="width:0%"></div>
+    </div>
+    <div class="bar-labels">
+      <span>Very Dry</span><span>Adequate</span><span>Wet</span>
+    </div>
+    <div class="rec-box">
+      <p id="soil-rec-text">--</p>
+    </div>
+    <button class="btn btn-voice" onclick="speakResult('soil')">
+      🔊 Read Aloud
+    </button>
+    <button class="btn btn-outline" onclick="downloadSoilReport()"
+        style="margin-top:8px">
+      📄 Download PDF Report
+    </button>
+  </div>
+  <!-- Water Calculator -->
+<div class="result-card show" id="water-calc" style="display:none!important">
+</div>
+
+<div class="card" id="water-card" style="display:none;margin-top:14px">
+  <div class="card-title">💧 Water Requirement Calculator</div>
+  
+  <label style="font-size:13px;color:#666;display:block;margin-bottom:6px">
+    What crop are you planting?
+  </label>
+  <select id="water-crop" style="width:100%;padding:10px;border-radius:10px;
+          border:1.5px solid #a5d6a7;font-size:14px;margin-bottom:10px;
+          background:#fff">
+    <option value="tomato">🍅 Tomato</option>
+    <option value="potato">🥔 Potato</option>
+    <option value="onion">🧅 Onion</option>
+    <option value="rice">🌾 Rice</option>
+    <option value="wheat">🌿 Wheat</option>
+    <option value="maize">🌽 Maize</option>
+    <option value="cotton">Cotton</option>
+    <option value="chilli">🌶️ Chilli</option>
+    <option value="groundnut">Groundnut</option>
+    <option value="sugarcane">Sugarcane</option>
+  </select>
+
+  <label style="font-size:13px;color:#666;display:block;margin-bottom:6px">
+    Farm Area (in acres)
+  </label>
+  <input type="number" id="water-area" placeholder="e.g. 2.5"
+         style="width:100%;padding:10px;border-radius:10px;
+                border:1.5px solid #a5d6a7;font-size:14px;
+                margin-bottom:10px"/>
+
+  <button class="btn btn-primary" onclick="calculateWater()">
+    💧 Calculate Water Schedule
+  </button>
+
+  <!-- Result -->
+  <div id="water-result" style="display:none;margin-top:14px">
+    <div class="weather-grid" style="margin-bottom:12px">
+      <div class="weather-stat">
+        <div class="val" id="water-litres" style="font-size:18px">--</div>
+        <div class="lbl">Litres/session</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="water-times" style="font-size:18px">--</div>
+        <div class="lbl">Times/week</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="water-duration" style="font-size:18px">--</div>
+        <div class="lbl">Minutes/session</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="water-total" style="font-size:18px">--</div>
+        <div class="lbl">Litres/week</div>
+      </div>
+    </div>
+    <div class="rec-box">
+      <p id="water-schedule">--</p>
+    </div>
+    <button class="btn btn-voice" onclick="speakWaterSchedule()"
+            style="margin-top:10px">
+      🔊 Read Water Schedule
+    </button>
+  </div>
+  <!-- Best Crop Suggestion -->
+  <div class="section-label">🌱 Best Crop for Your Soil</div>
+  <div class="card">
+    <select id="suggest-soil" style="width:100%;padding:10px;border-radius:10px;
+            border:1.5px solid #a5d6a7;font-size:14px;margin-bottom:8px">
+      <option value="Red soil">Red Soil</option>
+      <option value="Black Soil">Black Soil</option>
+      <option value="Clay soil">Clay Soil</option>
+      <option value="Alluvial soil">Alluvial Soil</option>
+    </select>
+    <input type="number" id="suggest-area" placeholder="Field area in acres"
+           style="width:100%;padding:10px;border-radius:10px;
+                  border:1.5px solid #a5d6a7;font-size:14px;margin-bottom:10px"/>
+    <button class="btn btn-outline" onclick="getSuggestedCrops()">
+      🌾 Suggest Best Crop
+    </button>
+    <div id="crop-suggestions" style="margin-top:10px"></div>
+  </div>
+
+</div>
+<!-- END SOIL PAGE -->
+</div>
+</div>
+
+<!-- DISEASE PAGE -->
+<div class="page" id="page-disease">
+  <div class="card">
+    <div class="card-title">🔬 Leaf Disease Scan</div>
+    <div class="camera-box" id="disease-camera-box" style="position:relative">
+      <video id="disease-video" autoplay playsinline></video>
+      <canvas id="bbox-canvas"></canvas>
+      <canvas id="disease-canvas" style="display:none"></canvas>
+      <div class="cam-placeholder" id="disease-placeholder">
+        <div class="icon">🍃</div>
+        <h3>Point at a Leaf</h3>
+        <p>Hold the camera close to<br/>the leaf for best results</p>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="disease-cam-btn"
+            onclick="startDiseaseCamera()">
+      📷 Open Camera
+    </button>
+    <button class="btn btn-primary" id="disease-capture-btn"
+            onclick="captureDisease()" style="display:none">
+      ⚡ Analyze Now
+    </button>
+    <button class="btn btn-outline"
+            onclick="document.getElementById('disease-file').click()">
+      📁 Upload Photo
+    </button>
+    <input type="file" id="disease-file" accept="image/*"
+           style="display:none" onchange="uploadDisease(this)"/>
+  </div>
+
+  <div class="spinner" id="disease-spinner"></div>
+
+  <div class="result-card" id="disease-result">
+    <div class="card-title">🧪 Detection Result</div>
+    <span class="result-badge" id="disease-badge">Detected</span>
+    <div class="result-main" id="disease-name-text">--</div>
+    <div class="result-sub"  id="disease-confidence-text">--</div>
+    <div class="rec-box">
+      <p id="disease-rec-text">--</p>
+    </div>
+    <div class="section-label">Confidence Scores</div>
+    <div class="chips" id="disease-chips"></div>
+    <!-- Product Recommendations -->
+    <div class="section-label" id="product-label" style="display:none">
+      🛒 Recommended Products
+    </div>
+    <div id="product-list"></div>
+    <button class="btn btn-voice" style="margin-top:12px"
+            onclick="speakResult('disease')">
+      🔊 Read Aloud
+    </button>
+    <button class="btn btn-outline" onclick="downloadDiseaseReport()"
+        style="margin-top:8px">
+      📄 Download PDF Report
+    </button>
+  </div>
+</div>
+
+<!-- MARKET PAGE -->
+<div class="page" id="page-market">
+
+  <div class="card">
+    <div class="card-title">🌤️ Weather Forecast</div>
+    <div class="weather-grid">
+      <div class="weather-stat">
+        <div class="val" id="weather-temp">--°C</div>
+        <div class="lbl">Temperature</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="weather-rain">-- mm</div>
+        <div class="lbl">7-day Rainfall</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="weather-wind">-- km/h</div>
+        <div class="lbl">Wind Speed</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="weather-condition">--</div>
+        <div class="lbl">Condition</div>
+      </div>
+    </div>
+    <div class="rec-box">
+      <p id="weather-advice">Fetching weather data...</p>
+    </div>
+  </div>
+
+  <div class="section-label">📦 Crop Prices Today</div>
+  <div id="market-prices"></div>
+  <button class="btn btn-outline" onclick="loadMarketData()" style="margin-top:4px">
+    🔄 Refresh Prices
+  </button>
+
+  <div class="section-label">📊 Market Analytics (R)</div>
+  <button class="btn btn-primary" id="analytics-btn" onclick="generateCharts()">
+    📈 Generate Price Analytics
+  </button>
+  <div class="spinner" id="analytics-spinner"></div>
+  <div id="analytics-charts" style="display:none">
+    <div class="card" style="margin-top:10px">
+      <div class="card-title">📈 Price Trend (30 Days)</div>
+      <img id="chart-trend" src="" style="width:100%;border-radius:10px"/>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <div class="card-title">📦 Price Volatility</div>
+      <img id="chart-volatility" src="" style="width:100%;border-radius:10px"/>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <div class="card-title">💰 Profit per Acre</div>
+      <img id="chart-profit" src="" style="width:100%;border-radius:10px"/>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <div class="card-title">📅 Weekly Averages</div>
+      <img id="chart-weekly" src="" style="width:100%;border-radius:10px"/>
+    </div>
+  </div>
+
+  <div class="section-label">🎯 Best Time to Sell</div>
+  <div class="card">
+    <select id="sell-crop" style="width:100%;padding:10px;border-radius:10px;
+            border:1.5px solid #a5d6a7;font-size:14px;margin-bottom:10px">
+      <option value="tomato">🍅 Tomato</option>
+      <option value="rice">🌾 Rice</option>
+      <option value="wheat">🌿 Wheat</option>
+      <option value="onion">🧅 Onion</option>
+      <option value="potato">🥔 Potato</option>
+    </select>
+    <button class="btn btn-outline" onclick="getBestSellAdvice()">
+      🔍 Get Sell Advice
+    </button>
+    <div class="rec-box" style="margin-top:10px;display:none" id="sell-advice">
+      <p id="sell-advice-text">--</p>
+    </div>
+  </div>
+
+</div>
+<!-- END MARKET PAGE -->
+
+<!-- HISTORY PAGE -->
+<div class="page" id="page-history">
+  <div class="card-title" style="padding:4px 0">📋 Scan History</div>
+  <div id="history-list">
+    <div class="spinner" style="display:block"></div>
+  </div>
+</div>
+
+<script>
+var selectedLang    = "en-IN";
+var lastSoilResult  = null;
+var lastDiseaseResult = null;
+var LAT = 12.9716, LON = 77.5946;
+
+var CROP_ICONS = {
+  tomato: "🍅", rice: "🌾", wheat: "🌿",
+  onion: "🧅", potato: "🥔"
+};
+
+var VOICE_TEXTS = {
+  "en-IN": {
+    soil_result: function(d) {
+      return "Soil type is " + d.soil_type +
+             ". Moisture level is " + d.moisture_percent +
+             " percent. " + d.recommendation;
+    },
+    disease_result: function(d) {
+      var name = d.disease.replace(/___/g," ").replace(/_/g," ");
+      return d.is_healthy
+        ? "The plant looks healthy. Continue current care."
+        : "Disease detected. " + name + ". Treatment: " + d.treatment;
+    }
+  },
+  "hi-IN": {
+    soil_result: function(d) {
+      return "मिट्टी का प्रकार " + d.soil_type + " है। " +
+             "नमी का स्तर " + d.moisture_percent + " प्रतिशत है। " +
+             d.recommendation;
+    },
+    disease_result: function(d) {
+      var name = d.disease.replace(/___/g," ").replace(/_/g," ");
+      return d.is_healthy
+        ? "पौधा स्वस्थ दिखता है। वर्तमान देखभाल जारी रखें।"
+        : "बीमारी पाई गई: " + name + ". उपचार: " + d.treatment;
+    }
+  },
+  "kn-IN": {
+    soil_result: function(d) {
+      return "ಮಣ್ಣಿನ ಪ್ರಕಾರ " + d.soil_type + ". " +
+             "ತೇವಾಂಶದ ಮಟ್ಟ " + d.moisture_percent + " ಪ್ರತಿಶತ. " +
+             d.recommendation;
+    },
+    disease_result: function(d) {
+      var name = d.disease.replace(/___/g," ").replace(/_/g," ");
+      return d.is_healthy
+        ? "ಸಸ್ಯವು ಆರೋಗ್ಯಕರವಾಗಿದೆ. ಪ್ರಸ್ತುತ ಆರೈಕೆ ಮುಂದುವರಿಸಿ."
+        : "ರೋಗ ಪತ್ತೆಯಾಗಿದೆ: " + name + ". ಚಿಕಿತ್ಸೆ: " + d.treatment;
+    }
+  },
+  "ta-IN": {
+    soil_result: function(d) {
+      return "மண் வகை " + d.soil_type + ". " +
+             "ஈரப்பதம் " + d.moisture_percent + " சதவீதம். " +
+             d.recommendation;
+    },
+    disease_result: function(d) {
+      var name = d.disease.replace(/___/g," ").replace(/_/g," ");
+      return d.is_healthy
+        ? "செடி ஆரோக்கியமாக உள்ளது. தொடர்ந்து கவனிக்கவும்."
+        : "நோய் கண்டறியப்பட்டது: " + name + ". சிகிச்சை: " + d.treatment;
+    }
+  },
+  "te-IN": {
+    soil_result: function(d) {
+      return "నేల రకం " + d.soil_type + ". " +
+             "తేమ స్థాయి " + d.moisture_percent + " శాతం. " +
+             d.recommendation;
+    },
+    disease_result: function(d) {
+      var name = d.disease.replace(/___/g," ").replace(/_/g," ");
+      return d.is_healthy
+        ? "మొక్క ఆరోగ్యంగా ఉంది. ప్రస్తుత సంరక్షణ కొనసాగించండి."
+        : "వ్యాధి కనుగొనబడింది: " + name + ". చికిత్స: " + d.treatment;
+    }
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// 🔊 FIXED MULTI-LANGUAGE VOICE SYSTEM
+// ══════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════
+// 🔊 FIXED VOICE SYSTEM - Using Flask Backend TTS
+// ══════════════════════════════════════════════════════
+
+var currentAudio = null;
+
+function speak(text, lang) {
+  // Stop any playing audio
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
+
+  // Show user feedback
+  showSpeakingStatus(true);
+
+  fetch("/api/tts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text: text,
+      lang: lang
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      currentAudio = new Audio(data.audio_url);
+      currentAudio.playbackRate = 1.0;
+
+      currentAudio.onended = function() {
+        showSpeakingStatus(false);
+      };
+
+      currentAudio.onerror = function() {
+        showSpeakingStatus(false);
+        alert("Audio playback failed. Please try again.");
+      };
+
+      currentAudio.play();
+    } else {
+      showSpeakingStatus(false);
+      alert("TTS Error: " + data.error);
+    }
+  })
+  .catch(function(err) {
+    showSpeakingStatus(false);
+    console.error("TTS fetch failed:", err);
+    alert("Voice service unavailable. Is Flask running?");
+  });
+}
+
+function showSpeakingStatus(speaking) {
+  // Change all voice buttons to show status
+  var buttons = document.querySelectorAll(".btn-voice");
+  buttons.forEach(function(btn) {
+    if (speaking) {
+      btn.style.background = "#2e7d32";
+      btn.style.color = "#fff";
+      btn.innerHTML = "🔊 Speaking...";
+    } else {
+      btn.style.background = "#e8f5e9";
+      btn.style.color = "#2e7d32";
+      btn.innerHTML = "🔊 Read Aloud";
+    }
+  });
+}
+
+function speakResult(type) {
+  var englishText = "";
+
+  if (type === "soil") {
+    if (!lastSoilResult) {
+      alert("Please scan soil first!");
+      return;
+    }
+    englishText = VOICE_TEXTS["en-IN"].soil_result(lastSoilResult);
+
+  } else if (type === "disease") {
+    if (!lastDiseaseResult) {
+      alert("Please scan a leaf first!");
+      return;
+    }
+    englishText = VOICE_TEXTS["en-IN"].disease_result(lastDiseaseResult);
+  }
+
+  if (!englishText) return;
+
+  // Just send English text + target language
+  // Flask handles translation + TTS in one shot
+  speak(englishText, selectedLang);
+}
+
+// ── Translate English → Target Language, then speak ──
+function translateAndSpeak(englishText, targetLang) {
+  var langCode = targetLang.split("-")[0];
+
+  fetch("https://api.mymemory.translated.net/get?q=" +
+        encodeURIComponent(englishText) + "&langpair=en|" + langCode)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var translated = data.responseData.translatedText;
+      if (translated && translated !== englishText) {
+        speak(translated, targetLang);
+      } else {
+        // Translation failed, speak English
+        speak(englishText, "en-IN");
+      }
+    })
+    .catch(function() {
+      console.warn("Translation failed, speaking English");
+      speak(englishText, "en-IN");
+    });
+}
+
+// ── Speak Farm Report ────────────────────────────────
+function speakFarmReport() {
+  if (!lastFarmResult) {
+    alert("Please predict yield first!");
+    return;
+  }
+
+  var d = lastFarmResult;
+  var text = "Farm report for " + d.crop + ". " +
+    "Expected yield is " + d.yield.expected_kg + " kilograms, " +
+    "or " + d.yield.expected_tons + " tons. " +
+    "Best case is " + d.yield.optimistic_kg + " kilograms. " +
+    "Worst case is " + d.yield.pessimistic_kg + " kilograms. " +
+    "Harvest date is " + d.harvest.harvest_date + ". " +
+    "Season is " + d.harvest.season + ". " +
+    "Water requirement is " + d.water_requirement + ". " +
+    "You will need " + d.transport.vehicles_needed + " " +
+    d.transport.vehicle_type + " for transport, " +
+    "costing approximately " + d.transport.estimated_cost + " rupees. " +
+    "Contact " + d.brokers[0].name + " at " + d.brokers[0].phone;
+
+  speak(text, selectedLang);
+}
+
+function speakWaterSchedule() {
+  if (!window._lastWaterResult) {
+    alert("Calculate water schedule first!");
+    return;
+  }
+
+  var d = window._lastWaterResult;
+  var text = "Water schedule for " + d.crop + ". " +
+    "Give " + d.litres_per_session + " litres per session, " +
+    d.times_per_week + " times per week, " +
+    "for " + d.minutes_per_session + " minutes each time. " +
+    "Total water needed is " + d.total_litres_week + " litres per week. " +
+    d.schedule;
+
+  speak(text, selectedLang);
+}
+
+function setLang(lang, btn) {
+  selectedLang = lang;
+  document.querySelectorAll(".lang-btn").forEach(function(b) {
+    b.classList.remove("active");
+  });
+  btn.classList.add("active");
+}
+
+function switchTab(tab) {
+  document.querySelectorAll(".tab").forEach(function(t) {
+    t.classList.remove("active");
+  });
+  document.querySelectorAll(".page").forEach(function(p) {
+    p.classList.remove("active");
+  });
+  document.querySelector("[onclick=\"switchTab('" + tab + "')\"]")
+          .classList.add("active");
+  document.getElementById("page-" + tab).classList.add("active");
+  if (tab === "history") loadHistory();
+  if (tab === "market")  loadMarketData();
+}
+
+function startCamera(videoId, placeholderId, camBtnId, captureBtnId) {
+  return navigator.mediaDevices.getUserMedia({
+    video: { facingMode: "environment" }
+  }).then(function(stream) {
+    var video = document.getElementById(videoId);
+    video.srcObject    = stream;
+    video.style.display = "block";
+    document.getElementById(placeholderId).style.display  = "none";
+    document.getElementById(camBtnId).style.display       = "none";
+    document.getElementById(captureBtnId).style.display   = "block";
+    return stream;
+  }).catch(function() {
+    alert("Camera access denied. Please use Upload Photo.");
+    return null;
+  });
+}
+
+function captureFrame(videoId, canvasId) {
+  var video  = document.getElementById(videoId);
+  var canvas = document.getElementById(canvasId);
+  canvas.width  = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0);
+  return new Promise(function(res) {
+    canvas.toBlob(res, "image/jpeg", 0.92);
+  });
+}
+
+function startSoilCamera() {
+  startCamera("soil-video","soil-placeholder",
+              "soil-cam-btn","soil-capture-btn")
+    .then(function(s) {
+      soilStream = s;
+      document.getElementById("dig-guide").style.display = "block";
+      // Wait for video to load then draw
+      var video = document.getElementById("soil-video");
+      video.addEventListener("loadedmetadata", function() {
+        drawCameraGuide("red"); // Start red
+        startPositionDetector(); // Start checking position
+      });
+    });
+}
+function captureSoil() {
+  captureFrame("soil-video","soil-canvas")
+    .then(function(blob) { analyzeSoil(blob); });
+}
+function uploadSoil(input) {
+  if (input.files[0]) analyzeSoil(input.files[0]);
+}
+
+function analyzeSoil(blob) {
+  document.getElementById("soil-spinner").style.display = "block";
+  document.getElementById("soil-result").classList.remove("show");
+  var form = new FormData();
+  form.append("image",   blob, "soil.jpg");
+  form.append("farm_id", "farm_001");
+  fetch("/api/analyze/soil", { method: "POST", body: form })
+    .then(function(r) { return r.json(); })
+    .then(function(json) {
+      document.getElementById("soil-spinner").style.display = "none";
+      if (json.success) displaySoilResult(json.data);
+      else alert("Error: " + json.error);
+    }).catch(function() {
+      document.getElementById("soil-spinner").style.display = "none";
+      alert("Server error. Is Flask running?");
+    });
+}
+
+function displaySoilResult(data) {
+  lastSoilResult = data;
+  var badge = document.getElementById("soil-badge");
+  if (data.category === "very_dry" || data.category === "dry") {
+    badge.className = "result-badge badge-warning";
+    badge.textContent = "Dry Soil";
+  } else if (data.category === "wet") {
+    badge.className = "result-badge badge-danger";
+    badge.textContent = "Wet Soil";
+  } else {
+    badge.className = "result-badge badge-success";
+    badge.textContent = "Good Moisture";
+  }
+  document.getElementById("soil-type-text").textContent =
+    data.soil_type;
+  document.getElementById("soil-confidence-text").textContent =
+    "Confidence: " + data.confidence + "%";
+  document.getElementById("soil-moisture-pct").textContent =
+    data.moisture_percent + "%";
+  document.getElementById("soil-moisture-bar").style.width =
+    data.moisture_percent + "%";
+  document.getElementById("soil-rec-text").textContent =
+    data.recommendation;
+  document.getElementById("soil-result").classList.add("show");
+  // Show water calculator after soil scan
+  document.getElementById("water-card").style.display = "block";
+  
+}
+
+
+function startDiseaseCamera() {
+  startCamera("disease-video","disease-placeholder",
+              "disease-cam-btn","disease-capture-btn");
+}
+function captureDisease() {
+  captureFrame("disease-video","disease-canvas")
+    .then(function(blob) { analyzeDisease(blob); });
+}
+function uploadDisease(input) {
+  if (input.files[0]) analyzeDisease(input.files[0]);
+}
+
+function analyzeDisease(blob) {
+  document.getElementById("disease-spinner").style.display = "block";
+  document.getElementById("disease-result").classList.remove("show");
+  var form = new FormData();
+  form.append("image",   blob, "leaf.jpg");
+  form.append("farm_id", "farm_001");
+  fetch("/api/analyze/disease", { method: "POST", body: form })
+    .then(function(r) { return r.json(); })
+    .then(function(json) {
+      document.getElementById("disease-spinner").style.display = "none";
+      if (json.success) displayDiseaseResult(json.data);
+      else alert("Error: " + json.error);
+    }).catch(function() {
+      document.getElementById("disease-spinner").style.display = "none";
+      alert("Server error. Is Flask running?");
+    });
+}
+
+function displayDiseaseResult(data) {
+  console.log("Disease result:", data);
+  lastDiseaseResult = data;
+  var badge = document.getElementById("disease-badge");
+  if (data.is_healthy) {
+    badge.className   = "result-badge badge-success";
+    badge.textContent = "Healthy Plant";
+  } else {
+    badge.className   = "result-badge badge-danger";
+    badge.textContent = "Disease Detected";
+  }
+  var name = data.disease.replace(/___/g," - ").replace(/_/g," ");
+  document.getElementById("disease-name-text").textContent = name;
+  document.getElementById("disease-confidence-text").textContent =
+    "Confidence: " + data.confidence + "%";
+  document.getElementById("disease-rec-text").textContent = data.treatment;
+
+  var chips = document.getElementById("disease-chips");
+  chips.innerHTML = "";
+  var scores = data.all_scores || {};
+  var sorted = Object.entries(scores).sort(function(a,b) {
+    return b[1] - a[1];
+  }).slice(0,6);
+  sorted.forEach(function(entry) {
+    var chip = document.createElement("div");
+    chip.className = "chip" + (entry[0] === data.disease ? " top" : "");
+    chip.textContent = entry[0].replace(/___/g," ").replace(/_/g," ") +
+                       ": " + entry[1] + "%";
+    chips.appendChild(chip);
+  });
+  // Load product recommendations
+  if (!data.is_healthy) {
+    loadProducts(data.disease);
+  } else {
+    document.getElementById("product-label").style.display = "none";
+    document.getElementById("product-list").innerHTML = "";
+  }
+    document.getElementById("disease-result").classList.add("show");
+    if (!data.is_healthy) drawBoundingBox();
+  }
+
+function drawBoundingBox() {
+  var canvas = document.getElementById("bbox-canvas");
+  var box    = document.getElementById("disease-camera-box");
+  canvas.width  = box.offsetWidth;
+  canvas.height = box.offsetHeight;
+  var ctx = canvas.getContext("2d");
+  var pad = 30;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "#e53935";
+  ctx.lineWidth   = 3;
+  ctx.strokeRect(pad, pad, canvas.width-pad*2, canvas.height-pad*2);
+  ctx.fillStyle = "#e53935";
+  ctx.fillRect(pad, pad-26, 160, 26);
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 13px sans-serif";
+  ctx.fillText("⚠ Disease Detected", pad+8, pad-8);
+}
+
+function loadHistory() {
+  fetch("/api/history/soil/farm_001")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var list = document.getElementById("history-list");
+      if (!data.length) {
+        list.innerHTML = "<p style='color:#888;text-align:center;padding:40px 0'>No scans yet. Start by analyzing some soil!</p>";
+        return;
+      }
+      var html = "";
+      data.forEach(function(r) {
+        var badgeCls = r.category.indexOf("dry") > -1 ? "badge-dry"
+                     : r.category === "wet" ? "badge-wet" : "badge-ok";
+        var date = new Date(r.timestamp).toLocaleString();
+        html += "<div class='history-item'>";
+        html += "<div class='h-icon'>💧</div>";
+        html += "<div class='h-info'>";
+        html += "<strong>" + r.moisture + "% moisture</strong>";
+        html += "<span>" + date + "</span></div>";
+        html += "<span class='h-badge " + badgeCls + "'>" +
+                r.category.replace("_"," ") + "</span></div>";
+      });
+      list.innerHTML = html;
+    }).catch(function() {
+      document.getElementById("history-list").innerHTML =
+        "<p style='color:#e53935;text-align:center'>Failed to load.</p>";
+    });
+}
+
+function loadMarketData() {
+  fetch("/api/weather?lat=" + LAT + "&lon=" + LON)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.error) {
+        document.getElementById("weather-temp").textContent =
+          data.current.temperature + "°C";
+        document.getElementById("weather-condition").textContent =
+          data.current.condition;
+        document.getElementById("weather-rain").textContent =
+          data.summary.total_rain_7days + "mm";
+        document.getElementById("weather-wind").textContent =
+          data.current.windspeed + "km/h";
+        document.getElementById("weather-advice").textContent =
+          data.summary.irrigation_advice;
+      }
+    }).catch(function() {
+      document.getElementById("weather-advice").textContent =
+        "Could not fetch weather data.";
+    });
+
+  var crops   = ["tomato","rice","wheat","onion","potato"];
+  var pricesDiv = document.getElementById("market-prices");
+  pricesDiv.innerHTML = "<div class='spinner' style='display:block'></div>";
+
+  Promise.all(crops.map(function(crop) {
+    return fetch("/api/market/" + crop).then(function(r) { return r.json(); });
+  })).then(function(prices) {
+    var html = "";
+    prices.forEach(function(p, i) {
+      var profit     = p.profit_estimate;
+      var profitable = profit.profitable;
+      var icon       = CROP_ICONS[crops[i]] || "🌿";
+      html += "<div class='price-card'>";
+      html += "<div class='crop-icon'>" + icon + "</div>";
+      html += "<div class='crop-info'>";
+      html += "<div class='crop-name'>" + p.crop + "</div>";
+      html += "<div class='crop-meta'>" + p.source + "</div>";
+      html += "<div class='crop-meta'>~" + profit.yield_per_acre +
+              " qtl/acre · Profit Rs." +
+              profit.profit_per_acre.toLocaleString() + "</div></div>";
+      html += "<div style='text-align:right'>";
+      html += "<div class='crop-price'>Rs." + p.price + "</div>";
+      html += "<div class='crop-meta'>" + p.unit + "</div>";
+      html += "<span class='profit-badge " +
+              (profitable ? "profit-yes" : "profit-no") + "'>" +
+              (profitable ? "✓ Profit" : "⚠ Low") + "</span></div></div>";
+    });
+    pricesDiv.innerHTML = html;
+  }).catch(function() {
+    pricesDiv.innerHTML =
+      "<p style='color:#e53935;text-align:center;padding:20px'>Failed to load prices.</p>";
+  });
+}
+
+
+
+var lastFarmResult = null;
+
+function predictYield() {
+  var crop  = document.getElementById("farm-crop").value;
+  var area  = document.getElementById("farm-area").value;
+  var date  = document.getElementById("farm-date").value;
+  var state = document.getElementById("farm-state").value;
+
+  if (!area || area <= 0) {
+    alert("Please enter field area in acres!");
+    return;
+  }
+
+  document.getElementById("farm-spinner").style.display = "block";
+  document.getElementById("farm-result").classList.remove("show");
+
+  fetch("/api/yield", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      crop: crop, area_acres: parseFloat(area),
+      planting_date: date, state: state
+    })
+  }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById("farm-spinner").style.display = "none";
+      if (data.error) { alert(data.error); return; }
+      displayFarmResult(data);
+    }).catch(function() {
+      document.getElementById("farm-spinner").style.display = "none";
+      alert("Server error. Is Flask running?");
+    });
+}
+
+function displayFarmResult(data) {
+  lastFarmResult = data;
+
+  // Yield
+  document.getElementById("yield-expected").textContent =
+    data.yield.expected_kg.toLocaleString() + " kg";
+  document.getElementById("yield-tons").textContent =
+    data.yield.expected_tons + " tons";
+  document.getElementById("yield-optimistic").textContent =
+    data.yield.optimistic_kg.toLocaleString() + " kg";
+  document.getElementById("yield-pessimistic").textContent =
+    data.yield.pessimistic_kg.toLocaleString() + " kg";
+
+  // Harvest info
+  document.getElementById("harvest-info").textContent =
+    "Harvest expected on " + data.harvest.harvest_date +
+    " (" + data.harvest.days_to_harvest + " days). " +
+    "Best season: " + data.harvest.season + ". " +
+    "Water need: " + data.water_requirement + ".";
+
+  // Profit — fetch live price
+  fetch("/api/market/" + data.crop.toLowerCase())
+    .then(function(r) { return r.json(); })
+    .then(function(market) {
+      var revenue = Math.round((data.yield.expected_kg / 100) * market.price);
+      var cost    = Math.round(25000 * data.area_acres);
+      var profit  = revenue - cost;
+      document.getElementById("profit-revenue").textContent =
+        "Rs." + revenue.toLocaleString();
+      document.getElementById("profit-net").textContent =
+        "Rs." + profit.toLocaleString();
+      document.getElementById("profit-net").style.color =
+        profit > 0 ? "#2e7d32" : "#e53935";
+    });
+
+  // Transport
+  var t = data.transport;
+  document.getElementById("transport-vehicle").textContent =
+    t.vehicle_type + " x" + t.vehicles_needed;
+  document.getElementById("transport-details").textContent =
+    "Rs." + t.cost_per_km + "/km · " + t.tip;
+  document.getElementById("transport-cost").textContent =
+    "~Rs." + t.estimated_cost.toLocaleString();
+
+  // Brokers
+  var brokerHtml = "";
+  data.brokers.forEach(function(b) {
+    brokerHtml += "<div class='history-item'>";
+    brokerHtml += "<div class='h-icon'>🏪</div>";
+    brokerHtml += "<div class='h-info'>";
+    brokerHtml += "<strong>" + b.name + "</strong>";
+    brokerHtml += "<span>" + b.city + " · " + b.phone + "</span></div>";
+    brokerHtml += "<a href='tel:" + b.phone + "' style='background:#2e7d32;" +
+                  "color:#fff;padding:6px 12px;border-radius:8px;" +
+                  "font-size:12px;text-decoration:none;font-weight:600'>Call</a>";
+    brokerHtml += "</div>";
+  });
+  document.getElementById("broker-list").innerHTML = brokerHtml;
+  document.getElementById("farm-result").classList.add("show");
+}
+
+
+
+function generateCharts() {
+  document.getElementById("analytics-spinner").style.display = "block";
+  document.getElementById("analytics-btn").disabled = true;
+  document.getElementById("analytics-charts").style.display = "none";
+
+  fetch("/api/market/analytics/generate")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById("analytics-spinner").style.display = "none";
+      document.getElementById("analytics-btn").disabled = false;
+      if (data.error) {
+        alert("R Error: " + data.error);
+        return;
+      }
+      var ts = "?t=" + Date.now();
+      document.getElementById("chart-trend").src      = data.charts[0] + ts;
+      document.getElementById("chart-volatility").src = data.charts[1] + ts;
+      document.getElementById("chart-profit").src     = data.charts[2] + ts;
+      document.getElementById("chart-weekly").src     = data.charts[3] + ts;
+      document.getElementById("analytics-charts").style.display = "block";
+    }).catch(function() {
+      document.getElementById("analytics-spinner").style.display = "none";
+      document.getElementById("analytics-btn").disabled = false;
+      alert("Make sure R is installed and Flask is running!");
+    });
+}
+
+function getBestSellAdvice() {
+  var crop = document.getElementById("sell-crop").value;
+  fetch("/api/market/best-sell/" + crop)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById("sell-advice").style.display = "block";
+      document.getElementById("sell-advice-text").textContent =
+        data.advice + " Average price: Rs." + data.avg_price +
+        "/quintal. Price volatility: Rs." + data.volatility +
+        ". " + (data.stable ? "Stable crop — low risk." : "Volatile crop — sell at right time!");
+    });
+}
+
+function getSuggestedCrops() {
+  var soil = document.getElementById("suggest-soil").value;
+  var area = document.getElementById("suggest-area").value || 1;
+  var area_val = parseFloat(area).toFixed(1);
+  var url = "/api/market/suggest/" + soil.replace(/ /g, "%20") + "/" + area_val;
+  console.log("Calling URL:", url);
+ 
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(crops) {
+      var html = "";
+      crops.forEach(function(c, i) {
+        var medal = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+        html += "<div class='price-card' style='margin-top:8px'>";
+        html += "<div class='crop-icon'>" + medal + "</div>";
+        html += "<div class='crop-info'>";
+        html += "<div class='crop-name'>" + c.crop + "</div>";
+        html += "<div class='crop-meta'>Yield: " + c.yield_kg.toLocaleString() +
+                " kg · Revenue: Rs." + c.revenue.toLocaleString() + "</div></div>";
+        html += "<div style='text-align:right'>";
+        html += "<div class='crop-price' style='font-size:15px'>Rs." +
+                c.profit.toLocaleString() + "</div>";
+        html += "<div class='crop-meta'>profit/acre</div>";
+        html += "<span class='profit-badge " +
+                (c.recommended ? "profit-yes" : "profit-no") + "'>" +
+                (c.recommended ? "✓ Recommended" : "Low margin") + "</span>";
+        html += "</div></div>";
+      });
+      document.getElementById("crop-suggestions").innerHTML = html;
+    });
+}
+function loadProducts(disease) {
+  fetch("/api/products/" + encodeURIComponent(disease))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.products || data.products.length === 0) return;
+
+      document.getElementById("product-label").style.display = "block";
+      var html = "";
+
+      data.products.forEach(function(p) {
+        html += "<div class='product-card'>";
+        html += "<img class='product-img' src='" + p.image +
+                "' onerror=\"this.src='https://via.placeholder.com/80x80/e8f5e9/2e7d32?text=🌿'\" />";
+        html += "<div class='product-info'>";
+        html += "<div class='product-name'>" + p.name + "</div>";
+        html += "<div class='product-brand'>" + p.brand + "</div>";
+        html += "<div class='product-price'>" + p.price + "</div>";
+        html += "</div>";
+        html += "<div class='product-dosage'>💊 " + p.dosage + "</div>";
+        html += "<div class='product-warning'>⚠️ " + p.warning + "</div>";
+        html += "<div class='buy-buttons'>";
+        html += "<a href='" + p.amazon + "' target='_blank' class='buy-btn buy-amazon'>🛒 Amazon</a>" +
+                 "<a href='" + p.agrostar + "' target='_blank' class='buy-btn buy-bighat'>🌱 AgroStar</a>";
+        html += "</div></div>";
+      });
+
+      document.getElementById("product-list").innerHTML = html;
+    }).catch(function() {
+      console.log("Products not available");
+    });
+}
+
+function drawCameraGuide(color) {
+  var canvas = document.getElementById("guide-canvas");
+  var box    = document.getElementById("soil-camera-box");
+  canvas.width  = box.offsetWidth;
+  canvas.height = box.offsetHeight;
+
+  var ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  var cx = canvas.width  / 2;
+  var cy = canvas.height / 2;
+  var r  = Math.min(canvas.width, canvas.height) * 0.35;
+
+  var mainColor = color === "green" ? "#4caf50" : "#f44336";
+  var glowColor = color === "green"
+                  ? "rgba(76,175,80,0.3)"
+                  : "rgba(244,67,54,0.3)";
+
+  // ── Dark overlay outside circle ──────────────────────
+  ctx.fillStyle = "rgba(0,0,0,0.45)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Cut out the circle (clear center)
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalCompositeOperation = "source-over";
+
+  // ── Glow ring ────────────────────────────────────────
+  ctx.beginPath();
+  ctx.arc(cx, cy, r + 8, 0, Math.PI * 2);
+  ctx.strokeStyle = glowColor;
+  ctx.lineWidth   = 16;
+  ctx.stroke();
+
+  // ── Main circle border ───────────────────────────────
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = mainColor;
+  ctx.lineWidth   = 3;
+  ctx.setLineDash([]);
+  ctx.stroke();
+
+  // ── Cross hair lines ─────────────────────────────────
+  ctx.strokeStyle = mainColor;
+  ctx.lineWidth   = 1.5;
+  ctx.globalAlpha = 0.8;
+
+  // Horizontal line
+  ctx.beginPath();
+  ctx.moveTo(cx - r - 20, cy);
+  ctx.lineTo(cx - r + 30, cy);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + r - 30, cy);
+  ctx.lineTo(cx + r + 20, cy);
+  ctx.stroke();
+
+  // Vertical line
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - r - 20);
+  ctx.lineTo(cx, cy - r + 30);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + r - 30);
+  ctx.lineTo(cx, cy + r + 20);
+  ctx.stroke();
+
+  ctx.globalAlpha = 1.0;
+
+  // ── Corner brackets inside circle ────────────────────
+  var bSize = 20;
+  var bDist = r * 0.6;
+  var corners = [
+    {x: cx - bDist, y: cy - bDist, h: [1,0],  v: [0,1]},
+    {x: cx + bDist, y: cy - bDist, h: [-1,0], v: [0,1]},
+    {x: cx - bDist, y: cy + bDist, h: [1,0],  v: [0,-1]},
+    {x: cx + bDist, y: cy + bDist, h: [-1,0], v: [0,-1]},
+  ];
+
+  ctx.strokeStyle = mainColor;
+  ctx.lineWidth   = 2.5;
+  corners.forEach(function(c) {
+    ctx.beginPath();
+    ctx.moveTo(c.x + c.h[0]*bSize, c.y + c.h[1]*bSize);
+    ctx.lineTo(c.x, c.y);
+    ctx.lineTo(c.x + c.v[0]*bSize, c.y + c.v[1]*bSize);
+    ctx.stroke();
+  });
+
+  // ── Center dot ───────────────────────────────────────
+  ctx.beginPath();
+  ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+  ctx.fillStyle = mainColor;
+  ctx.fill();
+
+  // ── Depth markers on circle edge ─────────────────────
+  ctx.fillStyle  = "#fff";
+  ctx.font       = "bold 11px sans-serif";
+  ctx.textAlign  = "center";
+  ctx.fillText("15cm depth", cx, cy - r - 10);
+
+  // ── Status pill ───────────────────────────────────────
+  var msg     = color === "green"
+                ? "✅ Aligned! Take photo now"
+                : "🔴 Align soil inside scope";
+  var pillW   = 220;
+  var pillH   = 32;
+  var pillY   = cy + r + 20;
+
+  ctx.fillStyle = color === "green"
+                  ? "rgba(46,125,50,0.9)"
+                  : "rgba(198,40,40,0.9)";
+  ctx.beginPath();
+  ctx.roundRect(cx - pillW/2, pillY, pillW, pillH, 16);
+  ctx.fill();
+
+  ctx.fillStyle  = "#fff";
+  ctx.font       = "bold 13px sans-serif";
+  ctx.textAlign  = "center";
+  ctx.fillText(msg, cx, pillY + 21);
+
+  // ── Tick marks around circle ──────────────────────────
+  for (var angle = 0; angle < 360; angle += 15) {
+    var rad    = angle * Math.PI / 180;
+    var inner  = angle % 90 === 0 ? r - 12 : r - 6;
+    var x1     = cx + Math.cos(rad) * inner;
+    var y1     = cy + Math.sin(rad) * inner;
+    var x2     = cx + Math.cos(rad) * r;
+    var y2     = cy + Math.sin(rad) * r;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = mainColor;
+    ctx.lineWidth   = angle % 90 === 0 ? 2 : 1;
+    ctx.stroke();
+  }
+}
+
+var _guideInterval = null;
+
+function startPositionDetector() {
+  if (_guideInterval) clearInterval(_guideInterval);
+
+  var video  = document.getElementById("soil-video");
+  var detect = document.createElement("canvas");
+  detect.width  = 100;
+  detect.height = 100;
+  var dctx = detect.getContext("2d");
+
+  _guideInterval = setInterval(function() {
+    if (video.readyState < 2) return;
+
+    // Sample center area of video
+    dctx.drawImage(video, 0, 0, 100, 100);
+    var pixels = dctx.getImageData(0, 0, 100, 100).data;
+
+    // Calculate average brightness
+    var brightness = 0;
+    for (var i = 0; i < pixels.length; i += 4) {
+      brightness += (pixels[i] + pixels[i+1] + pixels[i+2]) / 3;
+    }
+    brightness = brightness / (pixels.length / 4);
+
+    // Calculate color variance (soil has brownish tones)
+    var rAvg = 0, gAvg = 0, bAvg = 0, count = 0;
+    for (var j = 0; j < pixels.length; j += 4) {
+      rAvg += pixels[j];
+      gAvg += pixels[j+1];
+      bAvg += pixels[j+2];
+      count++;
+    }
+    rAvg /= count; gAvg /= count; bAvg /= count;
+
+    // Soil detection: brownish/reddish tones
+    // Good soil: R > G > B, medium brightness
+    var isSoilLike = (rAvg > gAvg) &&
+                     (brightness > 40) &&
+                     (brightness < 220);
+
+    drawCameraGuide(isSoilLike ? "green" : "red");
+
+  }, 500); // Check every 500ms
+}
+
+function captureSoil() {
+  // Stop position detector
+  if (_guideInterval) {
+    clearInterval(_guideInterval);
+    _guideInterval = null;
+  }
+  captureFrame("soil-video","soil-canvas")
+    .then(function(blob) { analyzeSoil(blob); });
+}
+
+function calculateWater() {
+  var crop = document.getElementById("water-crop").value;
+  var area = document.getElementById("water-area").value;
+
+  if (!area || area <= 0) {
+    alert("Please enter farm area!");
+    return;
+  }
+
+  // Get current soil moisture from last scan
+  var moisture = lastSoilResult ? lastSoilResult.category : "adequate";
+
+  fetch("/api/water", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      crop: crop,
+      area_acres: parseFloat(area),
+      soil_moisture: moisture
+    })
+  }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      document.getElementById("water-litres").textContent =
+        data.litres_per_session + "L";
+      document.getElementById("water-times").textContent =
+        data.times_per_week + "x";
+      document.getElementById("water-duration").textContent =
+        data.minutes_per_session + " min";
+      document.getElementById("water-total").textContent =
+        data.total_litres_week + "L";
+      document.getElementById("water-schedule").textContent =
+        data.schedule;
+      document.getElementById("water-result").style.display = "block";
+      window._lastWaterResult = data;
+    });
+}
+
+
+
+function downloadSoilReport() {
+  if (!lastSoilResult) {
+    alert("Please scan soil first!");
+    return;
+  }
+  
+  fetch("/api/report/soil", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      soil_data:  lastSoilResult,
+      water_data: window._lastWaterResult || null,
+      farm_id:    "farm_001"
+    })
+  }).then(function(r) { 
+      if (!r.ok) throw new Error("Network response was not ok");
+      return r.json(); 
+  }).then(function(data) {
+      if (data.success) {
+        var a = document.createElement("a");
+        a.href = data.download;
+        a.target = "_blank";
+        a.download = "soil_report.pdf";
+        document.body.appendChild(a); // Required for some browsers
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        alert("Error from server: " + data.error);
+      }
+  }).catch(function(err) {
+      console.error(err);
+      alert("Cannot download report. Ensure your Flask backend is running and the /api/report/soil route is active.");
+  });
+}
+
+function downloadDiseaseReport() {
+  if (!lastDiseaseResult) {
+    alert("Please scan a leaf first!");
+    return;
+  }
+  var products = [];
+  document.querySelectorAll(".product-card").forEach(function(card) {
+    products.push({
+      name:   card.querySelector(".product-name")  ? card.querySelector(".product-name").textContent  : "",
+      brand:  card.querySelector(".product-brand") ? card.querySelector(".product-brand").textContent : "",
+      price:  card.querySelector(".product-price") ? card.querySelector(".product-price").textContent : "",
+      dosage: card.querySelector(".product-dosage")? card.querySelector(".product-dosage").textContent: "",
+    });
+  });
+
+  fetch("/api/report/disease", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      disease_data: lastDiseaseResult,
+      products:     products,
+      farm_id:      "farm_001"
+    })
+  }).then(function(r) { 
+      if (!r.ok) throw new Error("Network response was not ok");
+      return r.json(); 
+  }).then(function(data) {
+      if (data.success) {
+        var a = document.createElement("a");
+        a.href = data.download;
+        a.target = "_blank";
+        a.download = "disease_report.pdf";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        alert("Error from server: " + data.error);
+      }
+  }).catch(function(err) {
+      console.error(err);
+      alert("Cannot download report. Ensure your Flask backend is running and the /api/report/disease route is active.");
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// 📱 PWA - Service Worker Registration + Install Prompt
+// ══════════════════════════════════════════════════════
+
+var deferredPrompt = null;
+
+// Register Service Worker
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("/sw.js")
+      .then(function(reg) {
+        console.log("✅ Service Worker registered:", reg.scope);
+        
+        // Check for updates
+        reg.addEventListener("updatefound", function() {
+          var newWorker = reg.installing;
+          newWorker.addEventListener("statechange", function() {
+            if (newWorker.state === "activated") {
+              showUpdateBanner();
+            }
+          });
+        });
+      })
+      .catch(function(err) {
+        console.log("❌ SW registration failed:", err);
+      });
+  });
+}
+
+// Capture install prompt
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner();
+});
+
+// Show install banner
+function showInstallBanner() {
+  // Remove existing banner if any
+  var existing = document.getElementById("install-banner");
+  if (existing) existing.remove();
+
+  var banner = document.createElement("div");
+  banner.id = "install-banner";
+  banner.style.cssText = 
+    "position:fixed;bottom:0;left:0;right:0;z-index:9999;" +
+    "background:linear-gradient(135deg,#1b5e20,#2e7d32);" +
+    "padding:16px 20px;display:flex;align-items:center;" +
+    "justify-content:space-between;box-shadow:0 -4px 20px rgba(0,0,0,0.3);" +
+    "animation:slideUp 0.5s ease";
+
+  banner.innerHTML = 
+    "<div style='display:flex;align-items:center;gap:12px;color:#fff'>" +
+    "  <span style='font-size:32px'>🌱</span>" +
+    "  <div>" +
+    "    <div style='font-weight:700;font-size:15px'>Install AgroSense</div>" +
+    "    <div style='font-size:12px;opacity:0.85'>Use as mobile app — works offline!</div>" +
+    "  </div>" +
+    "</div>" +
+    "<div style='display:flex;gap:8px'>" +
+    "  <button onclick='dismissInstall()' style='background:rgba(255,255,255,0.2);" +
+    "    border:none;color:#fff;padding:8px 16px;border-radius:8px;" +
+    "    font-size:13px;cursor:pointer'>Later</button>" +
+    "  <button onclick='installApp()' style='background:#fff;color:#2e7d32;" +
+    "    border:none;padding:8px 20px;border-radius:8px;font-size:13px;" +
+    "    font-weight:700;cursor:pointer'>⬇ Install</button>" +
+    "</div>";
+
+  document.body.appendChild(banner);
+}
+
+function installApp() {
+  if (!deferredPrompt) return;
+  
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(result) {
+    if (result.outcome === "accepted") {
+      console.log("✅ App installed!");
+      showToast("🎉 AgroSense installed successfully!");
+    }
+    deferredPrompt = null;
+    dismissInstall();
+  });
+}
+
+function dismissInstall() {
+  var banner = document.getElementById("install-banner");
+  if (banner) {
+    banner.style.animation = "slideDown 0.3s ease forwards";
+    setTimeout(function() { banner.remove(); }, 300);
+  }
+}
+
+// Show update banner
+function showUpdateBanner() {
+  var banner = document.createElement("div");
+  banner.style.cssText = 
+    "position:fixed;top:0;left:0;right:0;z-index:9999;" +
+    "background:#1565c0;color:#fff;padding:12px 20px;" +
+    "display:flex;align-items:center;justify-content:space-between;" +
+    "font-size:13px;box-shadow:0 2px 10px rgba(0,0,0,0.2)";
+  
+  banner.innerHTML = 
+    "<span>🔄 New version available!</span>" +
+    "<button onclick='location.reload()' style='background:#fff;color:#1565c0;" +
+    "border:none;padding:6px 16px;border-radius:6px;font-weight:700;" +
+    "font-size:12px;cursor:pointer'>Update</button>";
+  
+  document.body.appendChild(banner);
+}
+
+// Toast notification
+function showToast(message) {
+  var toast = document.createElement("div");
+  toast.style.cssText = 
+    "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);" +
+    "background:#333;color:#fff;padding:12px 24px;border-radius:30px;" +
+    "font-size:14px;z-index:9999;box-shadow:0 4px 15px rgba(0,0,0,0.3);" +
+    "animation:slideUp 0.3s ease";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(function() { toast.remove(); }, 3000);
+}
+
+// Online/Offline detection
+window.addEventListener("online", function() {
+  showToast("✅ Back online!");
+  document.body.style.opacity = "1";
+});
+
+window.addEventListener("offline", function() {
+  showToast("📡 You're offline. Some features won't work.");
+  document.body.style.opacity = "0.9";
+});
+
+// Listen for messages from service worker
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.addEventListener("message", function(event) {
+    if (event.data.type === "SYNC_COMPLETE") {
+      showToast(event.data.message);
+    }
+  });
+}
+
+// Handle URL parameters (for shortcuts)
+window.addEventListener("load", function() {
+  var params = new URLSearchParams(window.location.search);
+  var tab = params.get("tab");
+  if (tab) {
+    switchTab(tab);
+  }
+});
+
+// Add CSS animations
+var styleSheet = document.createElement("style");
+styleSheet.textContent = 
+  "@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }" +
+  "@keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }";
+document.head.appendChild(styleSheet);
+
+</script>
+<!-- FARM PAGE -->
+<div class="page" id="page-farm">
+
+  <div class="card">
+    <div class="card-title">🌾 Farm Details</div>
+
+    <label style="font-size:13px;color:#666;display:block;margin-bottom:6px">
+      Crop Name
+    </label>
+    <select id="farm-crop" style="width:100%;padding:10px 12px;border-radius:10px;
+            border:1.5px solid #a5d6a7;font-size:14px;margin-bottom:12px;
+            background:#fff;color:#1a3a1a">
+      <option value="tomato">🍅 Tomato</option>
+      <option value="potato">🥔 Potato</option>
+      <option value="onion">🧅 Onion</option>
+      <option value="rice">🌾 Rice</option>
+      <option value="wheat">🌿 Wheat</option>
+      <option value="maize">🌽 Maize</option>
+      <option value="cotton">Cotton</option>
+      <option value="soybean">Soybean</option>
+      <option value="sugarcane">Sugarcane</option>
+      <option value="brinjal">Brinjal</option>
+      <option value="chilli">🌶️ Chilli</option>
+      <option value="groundnut">Groundnut</option>
+    </select>
+
+    <label style="font-size:13px;color:#666;display:block;margin-bottom:6px">
+      Field Area (in Acres)
+    </label>
+    <input type="number" id="farm-area" placeholder="e.g. 2.5"
+           style="width:100%;padding:10px 12px;border-radius:10px;
+                  border:1.5px solid #a5d6a7;font-size:14px;
+                  margin-bottom:12px;background:#fff;color:#1a3a1a"/>
+
+    <label style="font-size:13px;color:#666;display:block;margin-bottom:6px">
+      Planting Date
+    </label>
+    <input type="date" id="farm-date"
+           style="width:100%;padding:10px 12px;border-radius:10px;
+                  border:1.5px solid #a5d6a7;font-size:14px;
+                  margin-bottom:12px;background:#fff;color:#1a3a1a"/>
+
+    <label style="font-size:13px;color:#666;display:block;margin-bottom:6px">
+      State
+    </label>
+    <select id="farm-state" style="width:100%;padding:10px 12px;border-radius:10px;
+        border:1.5px solid #a5d6a7;font-size:14px;margin-bottom:16px;
+        background:#fff;color:#1a3a1a">
+      <option value="karnataka">Karnataka</option>
+      <option value="maharashtra">Maharashtra</option>
+      <option value="andhra pradesh">Andhra Pradesh</option>
+      <option value="tamil nadu">Tamil Nadu</option>
+      <option value="telangana">Telangana</option>
+      <option value="punjab">Punjab</option>
+      <option value="gujarat">Gujarat</option>
+      <option value="uttar pradesh">Uttar Pradesh</option>
+      <option value="madhya pradesh">Madhya Pradesh</option>
+      <option value="rajasthan">Rajasthan</option>
+      <option value="west bengal">West Bengal</option>
+      <option value="bihar">Bihar</option>
+      <option value="odisha">Odisha</option>
+      <option value="kerala">Kerala</option>
+      <option value="haryana">Haryana</option>
+    </select>
+    <button class="btn btn-primary" onclick="predictYield()">
+      🔮 Predict Yield & Get Full Report
+    </button>
+  </div>
+
+  <div class="spinner" id="farm-spinner"></div>
+
+  <!-- Result -->
+  <div class="result-card" id="farm-result">
+
+    <!-- Yield summary -->
+    <div class="card-title">📊 Yield Prediction</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div class="weather-stat">
+        <div class="val" id="yield-expected">-- kg</div>
+        <div class="lbl">Expected Yield</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="yield-tons">-- tons</div>
+        <div class="lbl">In Tons</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="yield-optimistic">-- kg</div>
+        <div class="lbl">Best Case</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="yield-pessimistic">-- kg</div>
+        <div class="lbl">Worst Case</div>
+      </div>
+    </div>
+
+    <!-- Harvest info -->
+    <div class="rec-box" style="margin-bottom:14px">
+      <p id="harvest-info">--</p>
+    </div>
+
+    <!-- Profit estimate -->
+    <div class="card-title" style="margin-top:4px">💰 Profit Estimate</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div class="weather-stat">
+        <div class="val" id="profit-revenue" style="font-size:15px">--</div>
+        <div class="lbl">Revenue</div>
+      </div>
+      <div class="weather-stat">
+        <div class="val" id="profit-net" style="font-size:15px;color:#2e7d32">--</div>
+        <div class="lbl">Net Profit</div>
+      </div>
+    </div>
+
+    <!-- Transport -->
+    <div class="card-title">🚛 Transport Needed</div>
+    <div class="history-item" style="margin-bottom:14px">
+      <div class="h-icon">🚛</div>
+      <div class="h-info">
+        <strong id="transport-vehicle">--</strong>
+        <span id="transport-details">--</span>
+      </div>
+      <span class="h-badge badge-ok" id="transport-cost">--</span>
+    </div>
+
+    <!-- Brokers -->
+    <div class="card-title">🤝 Nearby APMC Mandis</div>
+    <div id="broker-list"></div>
+
+    <button class="btn btn-voice" onclick="speakFarmReport()"
+            style="margin-top:12px">
+      🔊 Read Full Report
+    </button>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head><title>Generate AgroSense Icons</title></head>
+<body>
+<h2>Right-click each icon → Save Image As</h2>
+<div id="icons"></div>
+<script>
+var sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+var container = document.getElementById("icons");
+
+sizes.forEach(function(size) {
+  var canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  var ctx = canvas.getContext("2d");
+
+  // Background
+  var grad = ctx.createLinearGradient(0, 0, size, size);
+  grad.addColorStop(0, "#1b5e20");
+  grad.addColorStop(1, "#43a047");
+  
+  // Rounded rect
+  var r = size * 0.15;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(size - r, 0);
+  ctx.quadraticCurveTo(size, 0, size, r);
+  ctx.lineTo(size, size - r);
+  ctx.quadraticCurveTo(size, size, size - r, size);
+  ctx.lineTo(r, size);
+  ctx.quadraticCurveTo(0, size, 0, size - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Leaf emoji
+  ctx.font = (size * 0.45) + "px serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("🌱", size/2, size * 0.38);
+
+  // Text
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold " + (size * 0.13) + "px Arial";
+  ctx.fillText("AGRO", size/2, size * 0.68);
+  ctx.font = "bold " + (size * 0.1) + "px Arial";
+  ctx.fillText("SENSE", size/2, size * 0.82);
+
+  // Display
+  var div = document.createElement("div");
+  div.style.cssText = "display:inline-block;margin:10px;text-align:center";
+  div.innerHTML = "<p>icon-" + size + ".png</p>";
+  
+  var img = new Image();
+  img.src = canvas.toDataURL("image/png");
+  img.style.border = "1px solid #ccc";
+  div.appendChild(img);
+  
+  // Download link
+  var link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download = "icon-" + size + ".png";
+  link.textContent = "⬇ Download";
+  link.style.cssText = "display:block;margin-top:4px;color:#2e7d32;font-size:12px";
+  div.appendChild(link);
+  
+  container.appendChild(div);
+});
+
+// Generate screenshots
+[1, 2].forEach(function(num) {
+  var canvas = document.createElement("canvas");
+  canvas.width = 390;
+  canvas.height = 844;
+  var ctx = canvas.getContext("2d");
+
+  var grad = ctx.createLinearGradient(0, 0, 390, 844);
+  grad.addColorStop(0, "#1b5e20");
+  grad.addColorStop(1, "#43a047");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 390, 844);
+
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 32px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("🌱 AgroSense", 195, 380);
+  ctx.font = "16px Arial";
+  ctx.fillText(num === 1 ? "Smart Farming Assistant" : "AI Soil Analysis", 195, 420);
+
+  var div = document.createElement("div");
+  div.style.cssText = "display:inline-block;margin:10px;text-align:center";
+  div.innerHTML = "<p>screenshot-" + num + ".png</p>";
+  
+  var img = new Image();
+  img.src = canvas.toDataURL("image/png");
+  img.style.cssText = "border:1px solid #ccc;width:120px";
+  div.appendChild(img);
+  
+  var link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download = "screenshot-" + num + ".png";
+  link.textContent = "⬇ Download";
+  link.style.cssText = "display:block;margin-top:4px;color:#2e7d32;font-size:12px";
+  div.appendChild(link);
+  
+  container.appendChild(div);
+});
+</script>
+</body>
+</html>
